@@ -74,7 +74,8 @@ export default defineConfig([
 # ci-cd-lr-project
 
 
+
 ## Latest Release Info
-- Version: v1.0.1
-- PR Title: CI/CD example
-- Chuck Norris Joke: Simply by visiting this website, Chuck Norris now knows your full name, address, occupation, what you look like and how often you smile.
+- Version: v1.0.2
+- PR Title: Manual push to main
+- Chuck Norris Joke: Chuck Norris doesn't look for religious guidance, religious guidance looks for him
