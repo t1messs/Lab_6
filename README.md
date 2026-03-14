@@ -77,7 +77,8 @@ export default defineConfig([
 
 
 
+
 ## Latest Release Info
-- Version: v1.0.3
+- Version: v1.0.4
 - PR Title: Manual push to main
-- Chuck Norris Joke: During a recent talk show interview Chuck Norris was asked what he thought of Justin Bieber. Chuck said he thought Bieber was a waste of perfectly good toilet paper.
+- Chuck Norris Joke: If they couldn't get John Malkovich for the movie 'Being John Malkovich', they would have simply changed it to 'Being Chuck Norris', and made a porno.
