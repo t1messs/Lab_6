@@ -1,0 +1,71 @@
+name: Release Pipeline
+
+# Запускаємо тільки при пуші в гілку main (це відбувається при злитті PR)
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  release:
+    name: Create Release and Update README
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Дозволяє боту бачити всю історію комітів, щоб потім пушити зміни
+
+      # 1. Робимо запит до API Чака Норріса і зберігаємо жарт у змінну
+      - name: Get Chuck Norris Joke
+        id: joke
+        run: |
+          JOKE=$(curl -s https://api.chucknorris.io/jokes/random | jq -r '.value')
+          echo "joke=$JOKE" >> $GITHUB_OUTPUT
+          echo "Отримано жарт: $JOKE"
+
+      # 2. Визначаємо нову версію, використовуючи номер запуску (github.run_number)
+      - name: Set Release Version
+        id: version
+        run: |
+          VERSION="v1.0.${{ github.run_number }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Нова версія: $VERSION"
+
+      # 3. Дописуємо інформацію в кінець файлу README.md
+      - name: Update README.md
+        run: |
+          echo "" >> README.md
+          echo "## Latest Release Info" >> README.md
+          echo "- **Version:** ${{ steps.version.outputs.version }}" >> README.md
+          echo "- **Commit:** ${{ github.event.head_commit.message }}" >> README.md
+          echo "- **Chuck Norris Joke:** ${{ steps.joke.outputs.joke }}" >> README.md
+
+      # 4. Комітимо та пушимо змінений README.md
+      - name: Commit and Push README
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          # Магічний тег [skip ci] каже GitHub НЕ запускати воркфлоу по колу через цей коміт!
+          git commit -m "docs: update README with release info [skip ci]"
+          git push origin main
+
+      # 5. Створюємо Git Tag
+      - name: Create Git Tag
+        run: |
+          git tag ${{ steps.version.outputs.version }}
+          git push origin ${{ steps.version.outputs.version }}
+
+      # 6. Створюємо красивий GitHub Release і додаємо туди жарт
+      # (Це виконує вимогу "додати жарт в Release notes")
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            🎉 Новий реліз: ${{ steps.version.outputs.version }}
+            
+            **Жарт випуску:** 
+            ${{ steps.joke.outputs.joke }}

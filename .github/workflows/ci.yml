@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+# 1. Коли запускати цей workflow?
+# Згідно з вимогами: при push та pull_request
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. Що саме робити?
+jobs:
+  build-and-test:
+    name: Check Code Quality
+    runs-on: ubuntu-latest # Віртуальний комп'ютер, на якому це запуститься
+
+    steps:
+      # Крок 1: Завантажити код твого репозиторію на цей віртуальний ПК
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Крок 2: Встановити Node.js (бо в нас React + Vite)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Сучасна стабільна версія
+          cache: 'npm'       # Кешування залежностей для швидкості
+
+      # Крок 3: Встановити всі бібліотеки (те саме, що npm install, але швидше для CI)
+      - name: Install dependencies
+        run: npm ci
+
+      # Крок 4: Запустити перевірку якості коду (Lint)
+      - name: Run ESLint
+        run: npm run lint
+
+      # Крок 5: Запустити тести
+      - name: Run Tests
+        run: npm test
+
+      # Крок 6: Перевірити, чи проєкт взагалі збирається (Build)
+      - name: Build Project
+        run: npm run build

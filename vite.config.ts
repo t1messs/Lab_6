@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ci-cd-lr-project/',
+  base: '/Lab_6/',
   build: {
     rollupOptions: {
       output: {
